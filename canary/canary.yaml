@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-blue
+  name: nginx-blue
+  namespace: default
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: nginx-blue  # Match label for blue deployment
+  template:
+    metadata:
+      labels:
+        app: nginx-blue  # Matching label for blue deployment
+    spec:  # Moved this under `template.metadata`
+      containers:
+        - image: nginx
+          name: nginx
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-green
+  name: nginx-green
+  namespace: default
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nginx-green  # Match label for green deployment
+  template:
+    metadata:
+      labels:
+        app: nginx-green  # Matching label for green deployment
+    spec:
+      containers:
+        - image: httpd
+          imagePullPolicy: Always
+          name: httpd
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: default
+spec:
+  ports: 
+    - port: 80
+      targetPort: 80
+  selector:
+    app: nginx-blue  # Matches label in one of the deployments, e.g., nginx-blue
+  type: LoadBalancer
