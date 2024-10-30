@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        env:
+          - name: ENVIRONMENT
+            value: development
+          - name: ALUNO
+            value: bobao
+
+        readinessProbe:
+          httpGet:
+            path: "/"
+            port: 80
+        livenessProbe:
+          httpGet:
+            path: "/"
+            port: 80
+
